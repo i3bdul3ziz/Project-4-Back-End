@@ -7,7 +7,7 @@ const tripSchema = new mongoose.Schema({
       required : true
     },
     numberOfPeople : {
-      type : Number,
+      type : String,
       required : true
     },
     startDate : {
@@ -22,6 +22,26 @@ const tripSchema = new mongoose.Schema({
       type : String,
       required : true
     },
+    lat:{
+      type : String,
+      required : true
+    },
+    lng: {
+      type : String,
+      required : true
+    },
+    aboutTrip : {
+      tripImages : [{
+        type : String,
+        required : true
+      }],
+      description : {
+        type : String,
+        required : true
+      }
+    },
+
+   
                              
 }, 
 {timestamps : true}

@@ -1,21 +1,23 @@
 const mongoose = require('mongoose')
-const userSchema = new mongoose.Schema({
+const companySchema = new mongoose.Schema({
 
 
-    firstName : {
+    companyName : {
       type : String,
+      unique : true,
       required : true
     },
-    lastName : {
+    licensesNumber : {
       type : String,
+      unique : true,
       required : true
     },
-    phoneNumber : {
+    comoanyPhoneNumber : {
         type : String,
         unique: true,
         required : true
       },
-    email : {
+    companyEmail : {
       type : String,
       unique: true,
       required : true
@@ -24,9 +26,7 @@ const userSchema = new mongoose.Schema({
       type : String,
       required : true
     },
-    resetPasswordExpires: Date,
-    resetPasswordToken: String,
-    booked : [{ 
+    trips : [{ 
         type: mongoose.Schema.Types.ObjectId,
         ref: "Trip"
       }],
@@ -35,5 +35,5 @@ const userSchema = new mongoose.Schema({
 {timestamps : true}
 )
 
-const User = mongoose.model('User', userSchema)
-module.exports = User
+const Company = mongoose.model('Company', companySchema)
+module.exports = Company
