@@ -12,7 +12,7 @@ const companySchema = new mongoose.Schema({
       unique : true,
       required : true
     },
-    comoanyPhoneNumber : {
+    companyPhoneNumber : {
         type : String,
         unique: true,
         required : true

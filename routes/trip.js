@@ -60,7 +60,7 @@ router.put("/:id/edit", (req, res) => {
   })
 });
 
-router.delete("/:id/delete",isLoggedIn,async(req, res) =>  { 
+router.delete("/:id/delete",isLoggedIn,async(req, res) => { 
 
  
  try {
