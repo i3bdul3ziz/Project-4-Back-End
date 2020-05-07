@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user.model");
+const Company = require("../models/company.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
@@ -10,24 +10,24 @@ sgMail.setApiKey(
   "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"
 );
 
-// user/
+// company/
 router.post("/signup", (req, res) => {
-  const newUser = {
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    phoneNumber: req.body.phoneNumber,
-    email: req.body.email,
+  const newCompany = {
+    companyName: req.body.companyName,
+    licensesNumber: req.body.licensesNumber,
+    companyPhoneNumber: req.body.comoanyPhoneNumber,
+    companyEmail: req.body.companyEmail,
     password: req.body.password,
   };
-  // res.send(newUser)
-  User.findOne({ email: newUser.email })
-    .then((user) => {
+  // res.send(newCompany)
+  Company.findOne({ companyEmail: newCompany.companyEmail })
+    .then((company) => {
       // if email not incloads the database
-      if (!user) {
-        bcrypt.hash(newUser.password, 10, (err, hash) => {
-          newUser.password = hash;
-          User.create(newUser).then(() =>
-            res.json({ msg: "user created", userInf: newUser, signup: true })
+      if (!company) {
+        bcrypt.hash(newCompany.password, 10, (err, hash) => {
+          newCompany.password = hash;
+          Company.create(newCompany).then(() =>
+            res.json({ msg: "company created", companyInf: newCompany, signup: true })
           );
         });
       } else {
@@ -39,18 +39,18 @@ router.post("/signup", (req, res) => {
 });
 
 router.post("/signin", (req, res) => {
-  const signinUser = {
-    email: req.body.email,
+  const signinCompany = {
+    companyEmail: req.body.companyEmail,
     password: req.body.password,
   };
 
-  User.findOne({ email: signinUser.email })
-    .then((user) => {
+  Company.findOne({ companyEmail: signinCompany.companyEmail })
+    .then((company) => {
       //if email exist
-      if (user) {
+      if (company) {
         // if password is correct
-        if (bcrypt.compareSync(signinUser.password, user.password)) {
-          let payload = { user };
+        if (bcrypt.compareSync(signinCompany.password, company.password)) {
+          let payload = { company };
           let token = jwt.sign(payload, "SECRET", { expiresIn: 36000000 });
           res.json({ token, signin: true });
           // if password is not correct
@@ -67,19 +67,19 @@ router.post("/signin", (req, res) => {
 
 // FORGET PASSWORD
 router.post("/forgetPass", (req, res) => {
-  User.findOne({ email: req.body.email }).then((user) => {
-    if (!user) return res.json({ msg: "Email doesn't Exist." });
-    user.resetPasswordToken = crypto.randomBytes(20).toString("hex");
-    user.resetPasswordExpires = Date.now() + 36000000;
-    user.save().then((user) => {
+  Company.findOne({ companyEmail: req.body.companyEmail }).then((company) => {
+    if (!company) return res.json({ msg: "Email doesn't Exist." });
+    company.resetPasswordToken = crypto.randomBytes(20).toString("hex");
+    company.resetPasswordExpires = Date.now() + 36000000;
+    company.save().then((company) => {
       const msg = {
-        to: user.email,
+        to: company.companyEmail,
         from: "experiment.yourself1@gmail.com",
         subject: "Reset Password",
         text: " ",
         html: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n 
         Please click on the following link, or paste this into your browser to complete the process:\n\n +
-        http://localhost:3000/reset/${user.resetPasswordToken}
+        http://localhost:3000/reset/${company.resetPasswordToken}
         \n\n
         If you did not request this, please ignore this email and your password will remain unchanged.\n
         `,
@@ -95,26 +95,27 @@ router.post("/forgetPass", (req, res) => {
 router.post("/reset/:token", (req, res) => {
   console.log(req.body.password);
 
-  User.findOne({ resetPasswordToken: req.params.token }).then((user) => {
-    if (!user) return res.json({ msg: "User token doesn't Exist." });
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
+  Company.findOne({ resetPasswordToken: req.params.token }).then((company) => {
+    if (!company) return res.json({ msg: "Company token doesn't Exist." });
+    company.resetPasswordToken = undefined;
+    company.resetPasswordExpires = undefined;
     bcrypt.hash(req.body.password, 10, (err, hash) => {
-      user.password = hash;
-      user.save().then(() => res.json({ msg: "Password Changed." }));
+      company.password = hash;
+      company.save().then(() => res.json({ msg: "Password Changed." }));
     });
   });
 });
 
 router.get("/:id",isLoggedIn ,async (req, res) => {
       
-  try {
-    let user = await User.findById(req.params.id)
-    
-    return res.json({ user }).status(200);
-  } catch (error) {
-    return res.json({ message: "Error!! Go go go!!!!!" }).status(400);
-  }
+    try {
+      let company = await Company.findById(req.params.id)
+      
+      return res.json({ company }).status(200);
+    } catch (error) {
+      return res.json({ message: "Error!! Go go go!!!!!" }).status(400);
+    }
 });
+
 
 module.exports = router;
