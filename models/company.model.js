@@ -26,10 +26,13 @@ const companySchema = new mongoose.Schema({
       type : String,
       required : true
     },
+    resetPasswordExpires: Date,
+    resetPasswordToken: String,
     trips : [{ 
         type: mongoose.Schema.Types.ObjectId,
         ref: "Trip"
       }],
+    isReg : false
                              
 }, 
 {timestamps : true}

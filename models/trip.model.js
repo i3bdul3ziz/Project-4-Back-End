@@ -30,16 +30,18 @@ const tripSchema = new mongoose.Schema({
       type : String,
       required : true
     },
-    aboutTrip : {
-      tripImages : [{
+    tripImages : [{
         type : String,
         required : true
-      }],
-      description : {
+    }],
+    description : {
         type : String,
         required : true
-      }
     },
+    user: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }]
 
    
                              
