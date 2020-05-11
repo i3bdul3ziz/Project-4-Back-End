@@ -15,7 +15,7 @@ router.post("/signup", (req, res) => {
   const newCompany = {
     companyName: req.body.companyName,
     licensesNumber: req.body.licensesNumber,
-    companyPhoneNumber: req.body.comoanyPhoneNumber,
+    companyPhoneNumber: req.body.companyPhoneNumber,
     companyEmail: req.body.companyEmail,
     password: req.body.password,
   };
