@@ -93,13 +93,12 @@ router.post("/forgetPass", (req, res) => {
 });
 
 router.post("/reset/:token", (req, res) => {
-  console.log(req.body.password);
-
   User.findOne({ resetPasswordToken: req.params.token }).then((user) => {
     if (!user) return res.json({ msg: "User token doesn't Exist." });
     user.resetPasswordToken = undefined;
     user.resetPasswordExpires = undefined;
     bcrypt.hash(req.body.password, 10, (err, hash) => {
+      console.log(user)
       user.password = hash;
       user.save().then(() => res.json({ msg: "Password Changed." }));
     });
