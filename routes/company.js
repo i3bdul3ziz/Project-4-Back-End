@@ -114,27 +114,29 @@ router.post("/reset/:token", (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    let company = await (await Company.findById(req.params.id)).populate("Trip")
+    let company = await (await Company.findById(req.params.id).populate({path : 'trips', model: 'Trip'}))
     return res.json({ company }).status(200);
   } catch (error) {
     return res.json({ message: "Error!! Go go go!!!!!" }).status(400);
   }
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id/edit", (req, res) => {
   let newCompany = {
     companyName: req.body.companyName,
     companyEmail: req.body.companyEmail,
   };
+  console.log(req.params.id)
   Company.findByIdAndUpdate(
     req.params.id,
-    { $set: newCompany },
+    { $set: newCompany},
     {
       new: true,
     }
   )
     .then((company) => {
-      res.json({ profile: company });
+      console.log(company)
+      res.status(200).json({ profile: company });
     })
     .catch((err) => {
       res.status(400).json({ messge: "can not update" });
