@@ -85,9 +85,9 @@ router.delete("/:id/delete", isLoggedIn, async (req, res) => {
   try {
     await Trip.findByIdAndDelete(req.params.id);
 
-    res.json({ message: "Trip Canceled successfully!" }).status(200);
+    res.json({ message: "Your Trip has been deleted successfully!" }).status(200);
   } catch (err) {
-    res.json({ message: "Unable to cancel" }).status(400);
+    res.json({ message: "Unable to delete" }).status(400);
   }
 });
 
@@ -108,7 +108,7 @@ router.put("/:id/cancel", isLoggedIn, (req, res) => {
       var index = user.booked.indexOf(req.params.id);
       if (index !== -1) user.booked.splice(index, 1);
       user.save();
-      res.json({ msg: "Your Trip has been deleted successfully!" });
+      res.json({ msg: "Trip Canceled successfully!" });
     })
     .catch((err) => {
       console.log(err);
