@@ -114,7 +114,7 @@ router.post("/reset/:token", (req, res) => {
 
 router.get("/:id", async (req, res) => {
   try {
-    let company = await (await Company.findById(req.params.id)).populate("Trip")
+    let company = await (await Company.findById(req.params.id).populate({path : 'trips', model: 'Trip'}))
     return res.json({ company }).status(200);
   } catch (error) {
     return res.json({ message: "Error!! Go go go!!!!!" }).status(400);

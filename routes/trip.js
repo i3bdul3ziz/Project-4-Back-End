@@ -17,7 +17,7 @@ router.get("/", isLoggedIn, async (req, res) => {
 });
 
 router.post("/create", isLoggedIn, (req, res) => {
-  const newTrip = {
+    const newTrip = {
     tripStyle: req.body.tripStyle,
     numberOfPeople: req.body.numberOfPeople,
     startDate: req.body.startDate,
@@ -32,6 +32,7 @@ router.post("/create", isLoggedIn, (req, res) => {
   trip
     .save()
     .then(() => {
+  
       Company.findById(req.user._id, (err, company) => {
         company.trips.push(trip);
         company.save();
