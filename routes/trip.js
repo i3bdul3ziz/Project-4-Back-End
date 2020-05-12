@@ -93,22 +93,16 @@ router.delete("/:id/delete", isLoggedIn, async (req, res) => {
 
 // trips for regular user
 router.put("/:id/book", isLoggedIn, (req, res) => {
-  Trip.findByIdAndUpdate(req.params.id)
-    .then((trip) => {
-      User.findByIdAndUpdate(req.user._id).then((user) => {
-        user.booked.push(trip);
-        user.save();
-      });
-      trip.user.push(req.user._id);
-      trip.save();
-      res.json({ msg: "Your Trip has been booked successfully!" });
-    })
+      User.findByIdAndUpdate(req.user._id, {$push : {booked : req.params.id}})
+      .then((user) => {
+        res.json({ msg: "Your Trip has been booked successfully!" });
+      })
     .catch((err) => {
       console.log(err);
     });
 });
 
-router.put("/:id/delete", isLoggedIn, (req, res) => {
+router.put("/:id/cancel", isLoggedIn, (req, res) => {
   User.findByIdAndUpdate(req.user._id)
     .then((user) => {
       var index = user.booked.indexOf(req.params.id);
