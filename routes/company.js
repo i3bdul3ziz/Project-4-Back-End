@@ -15,7 +15,7 @@ router.post("/signup", (req, res) => {
   const newCompany = {
     companyName: req.body.companyName,
     licensesNumber: req.body.licensesNumber,
-    companyPhoneNumber: req.body.comoanyPhoneNumber,
+    companyPhoneNumber: req.body.companyPhoneNumber,
     companyEmail: req.body.companyEmail,
     password: req.body.password,
   };
@@ -27,7 +27,11 @@ router.post("/signup", (req, res) => {
         bcrypt.hash(newCompany.password, 10, (err, hash) => {
           newCompany.password = hash;
           Company.create(newCompany).then(() =>
-            res.json({ msg: "company created", companyInf: newCompany, signup: true })
+            res.json({
+              msg: "company created",
+              companyInf: newCompany,
+              signup: true,
+            })
           );
         });
       } else {
@@ -106,16 +110,76 @@ router.post("/reset/:token", (req, res) => {
   });
 });
 
-router.get("/:id",isLoggedIn ,async (req, res) => {
-      
-    try {
-      let company = await Company.findById(req.params.id)
-      
-      return res.json({ company }).status(200);
-    } catch (error) {
-      return res.json({ message: "Error!! Go go go!!!!!" }).status(400);
-    }
+
+
+router.get("/:id", async (req, res) => {
+  try {
+    let company = await (await Company.findById(req.params.id)).populate("Trip")
+    return res.json({ company }).status(200);
+  } catch (error) {
+    return res.json({ message: "Error!! Go go go!!!!!" }).status(400);
+  }
 });
 
+router.put("/:id", (req, res) => {
+  let newCompany = {
+    companyName: req.body.companyName,
+    companyEmail: req.body.companyEmail,
+  };
+  Company.findByIdAndUpdate(
+    req.params.id,
+    { $set: newCompany },
+    {
+      new: true,
+    }
+  )
+    .then((company) => {
+      res.json({ profile: company });
+    })
+    .catch((err) => {
+      res.status(400).json({ messge: "can not update" });
+    });
+});
+
+// FORGET PASSWORD
+router.post("/forgetPass", (req, res) => {
+  Company.findOne({ companyEmail: req.body.companyEmail }).then((company) => {
+    if (!company) return res.json({ msg: "Email doesn't Exist." });
+    company.resetPasswordToken = crypto.randomBytes(20).toString("hex");
+    company.resetPasswordExpires = Date.now() + 36000000;
+    company.save().then((company) => {
+      const msg = {
+        to: company.email,
+        from: "experiment.yourself1@gmail.com",
+        subject: "Reset Password",
+        text: " ",
+        html: `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n 
+        Please click on the following link, or paste this into your browser to complete the process:\n\n +
+        http://localhost:3000/reset/${company.resetPasswordToken}
+        \n\n
+        If you did not request this, please ignore this email and your password will remain unchanged.\n
+        `,
+      };
+      sgMail
+        .send(msg)
+        .then(() => res.json({ msg: "Sending Email: Success." }))
+        .catch((err) => res.json({ msg: err }));
+    });
+  });
+});
+
+router.post("/reset/:token", (req, res) => {
+  console.log(req.body.password);
+
+  Company.findOne({ resetPasswordToken: req.params.token }).then((company) => {
+    if (!company) return res.json({ msg: "User token doesn't Exist." });
+    company.resetPasswordToken = undefined;
+    company.resetPasswordExpires = undefined;
+    bcrypt.hash(req.body.password, 10, (err, hash) => {
+      company.password = hash;
+      company.save().then(() => res.json({ msg: "Password Changed." }));
+    });
+  });
+});
 
 module.exports = router;

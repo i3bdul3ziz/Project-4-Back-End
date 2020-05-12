@@ -33,7 +33,6 @@ const companySchema = new mongoose.Schema({
         ref: "Trip"
       }],
     isReg : false
-                             
 }, 
 {timestamps : true}
 )
