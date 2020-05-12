@@ -121,20 +121,22 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.put("/:id", (req, res) => {
+router.put("/:id/edit", (req, res) => {
   let newCompany = {
     companyName: req.body.companyName,
     companyEmail: req.body.companyEmail,
   };
+  console.log(req.params.id)
   Company.findByIdAndUpdate(
     req.params.id,
-    { $set: newCompany },
+    { $set: newCompany},
     {
       new: true,
     }
   )
     .then((company) => {
-      res.json({ profile: company });
+      console.log(company)
+      res.status(200).json({ profile: company });
     })
     .catch((err) => {
       res.status(400).json({ messge: "can not update" });

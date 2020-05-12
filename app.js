@@ -8,7 +8,7 @@ mongoose
   .connect(
     "mongodb://localhost/TTG",
 
-    { useUnifiedTopology: true, useNewUrlParser: true }
+    { useUnifiedTopology: true, useNewUrlParser: true ,useFindAndModify: false}
   )
   .then((res) => console.log("mongodb is connected"))
   .catch((err) => console.log(err));
