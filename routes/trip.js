@@ -6,6 +6,15 @@ const Company = require("../models/company.model");
 const isLoggedIn = require("../config/config");
 
 // Routes
+router.get("/AllTrips", isLoggedIn, async (req, res) => {
+  try {
+    let trip = await (await Trip.find({}))
+    return res.json(trip).status(200);
+  } catch (error) {
+    return res.json({ message: "no trip" }).status(400);
+  }
+});
+
 
 router.get("/", isLoggedIn, async (req, res) => {
   try {
