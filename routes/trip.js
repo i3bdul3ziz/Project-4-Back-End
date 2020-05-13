@@ -44,7 +44,7 @@ router.post("/create", isLoggedIn, (req, res) => {
       Company.findById(req.user._id, (err, company) => {
         company.trips.push(trip);
         company.save();
-        trip.user.push();
+        trip.user.push(req.user._id);
         trip.save();
       });
       res.json({
@@ -102,14 +102,13 @@ router.delete("/:id/delete", isLoggedIn, async (req, res) => {
 });
 
 // trips for regular user
-router.put("/:id/book", isLoggedIn, (req, res) => {
-      User.findByIdAndUpdate(req.user._id, {$push : {booked : req.params.id}})
-      .then((user) => {
-        res.json({ msg: "Your Trip has been booked successfully!" });
-      })
-    .catch((err) => {
-      console.log(err);
-    });
+router.put("/:id/book", isLoggedIn, async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user._id, {$push : {booked : req.params.id}})
+      res.json({ msg: "Your Trip has been booked successfully!" }).status(200);;
+    } catch (err) {
+      res.json({ message: "Unable to book" }).status(400);
+    }
 });
 
 router.put("/:id/cancel", isLoggedIn, (req, res) => {
