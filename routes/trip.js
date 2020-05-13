@@ -41,10 +41,11 @@ router.post("/create", isLoggedIn, (req, res) => {
   trip
     .save()
     .then(() => {
-  
       Company.findById(req.user._id, (err, company) => {
         company.trips.push(trip);
         company.save();
+        trip.user.push();
+        trip.save();
       });
       res.json({
         msg: "Your Trip has been created successfully!",
@@ -58,7 +59,7 @@ router.post("/create", isLoggedIn, (req, res) => {
 
 router.get("/:id", isLoggedIn, async (req, res) => {
   try {
-    let trip = await Trip.findById(req.params.id).populate("User");
+    let trip = await Trip.findById(req.params.id).populate({path : 'user', model: 'Company'});
     return res.json({ trip }).status(200);
   } catch (error) {
     return res.json({ message: "No Trip" }).status(400);

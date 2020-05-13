@@ -105,15 +105,37 @@ router.post("/reset/:token", (req, res) => {
   });
 });
 
-router.get("/:id",isLoggedIn ,async (req, res) => {
-      
+router.get("/:id", isLoggedIn, async (req, res) => {
   try {
-    let user = await User.findById(req.params.id)
-    
+    let user = await (await User.findById(req.params.id).populate({path : 'booked', model: 'Trip', populate: {
+      path : 'user', model: 'Company'
+    }}))
     return res.json({ user }).status(200);
   } catch (error) {
     return res.json({ message: "Error!! Go go go!!!!!" }).status(400);
   }
+});
+
+router.put("/:id/edit", (req, res) => {
+  let newUser = {
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email : req.body.email
+  };
+  console.log(req.params.id)
+  User.findByIdAndUpdate(
+    req.params.id,
+    { $set: newUser},
+    {
+      new: true,
+    }
+  )
+    .then((user) => {
+      res.status(200).json({ profile: user });
+    })
+    .catch((err) => {
+      res.status(400).json({ messge: "can not update" });
+    });
 });
 
 module.exports = router;
